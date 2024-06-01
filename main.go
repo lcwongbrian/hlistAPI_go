@@ -4,7 +4,6 @@ import (
 	"hlistAPI/dbConnector"
 	"log"
 	"os"
-	"path/filepath"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -12,20 +11,16 @@ import (
 )
 
 func init() {
-	var errEnvRoot error
-	dir, errPath := filepath.Abs(filepath.Dir(os.Args[0]))
+	err := godotenv.Load()
 
-	if errPath != nil {
-		log.Fatal("Error getting root directory")
+	if err != nil {
+		log.Print("Error loading .env file")
 	}
 
-	errEnvPath := godotenv.Load(filepath.Join(dir, ".env"))
+	mongoUri := os.Getenv("MONGO_URL")
 
-	if errEnvPath != nil {
-		errEnvRoot = godotenv.Load(filepath.Join("./", ".env"))
-		if errEnvRoot != nil {
-			log.Fatal("Error loading .env file")
-		}
+	if len(mongoUri) == 0 {
+		log.Fatal("Error loading environment variables")
 	}
 
 	dbConnector.Connect(os.Getenv("MONGO_URL"))
