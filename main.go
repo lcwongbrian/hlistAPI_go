@@ -30,8 +30,12 @@ func main() {
 	router := gin.New()
 	router.Use(gin.Recovery(), cors.Default())
 	router.GET("/hlist/getSurfaceById/:id", dbConnector.GetSurfaceById)
-	err := router.Run("localhost:8080")
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	err := router.Run(":" + port)
 	if err != nil {
-		panic("[Error] failed to start Gin server due to: " + err.Error())
+		log.Panicf("error: %s", err)
 	}
 }
